@@ -16,16 +16,21 @@ RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-no
 WORKDIR /usr/src/cardano-node
 RUN git fetch --tags
 RUN git checkout ${CARDANO_NODE_VERSION}
+RUN git cherry-pick -n 4e71321f5fa0c43eddfa26b968b5e050c8b955b1 # Fix cabal install
 COPY cabal.project.local ./
 
 # Ugly workaround for vty-5.25.1
 RUN ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so
 RUN cabal update
-RUN cabal build cardano-cli \
+RUN cabal install cardano-cli \
+      --installdir=/usr/local/bin \
+      --install-method=copy \
       -f -systemd \
       -f -external-libsodium-vrf
-RUN cabal build cardano-node \
-      -f -systemd  \
+RUN cabal install cardano-node \
+      --installdir=/usr/local/bin \
+      --install-method=copy \
+      -f -systemd \
       -f -external-libsodium-vrf
 
 FROM perlur/centos-base
@@ -43,8 +48,8 @@ RUN yum update -y && \
 
 EXPOSE 9000
 
-COPY --from=builder /usr/src/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-node-1.19.0/x/cardano-node/build/cardano-node /usr/local/bin/
-COPY --from=builder /usr/src/cardano-node/dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-1.19.0/x/cardano-cli/build/cardano-cli /usr/local/bin/
+COPY --from=builder /usr/local/bin/cardano-node /usr/local/bin/
+COPY --from=builder /usr/local/bin/cardano-cli /usr/local/bin/
 COPY usr/local/lib/* /usr/local/lib/
 COPY usr/local/bin/* /usr/local/bin/
 
