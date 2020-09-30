@@ -6,7 +6,7 @@ ENV GHC_VERSION="8.6.5"
 ENV CARDANO_NODE_VERSION="1.20.0"
 
 RUN yum update -y && \
-    yum install -y libsodium-devel openssl-devel systemd-devel zlib-devel
+    yum install -y libsodium-devel openssl-devel zlib-devel
 RUN ghcup install cabal ${CABAL_VERSION}
 RUN ghcup install ghc ${GHC_VERSION} && \
     ghcup set ghc ${GHC_VERSION}
@@ -14,23 +14,25 @@ RUN ghcup install ghc ${GHC_VERSION} && \
 WORKDIR /usr/src
 RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-node
 WORKDIR /usr/src/cardano-node
-RUN git fetch --tags
+RUN git remote add hasufell https://github.com/hasufell/cardano-node.git
+RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
+RUN git cherry-pick -n b143dd14c6474d2dba6707057ff465604cbebc6b # Fix build without systemd (#1200)
 COPY cabal.project.local ./
+RUN scripts/gen-cabal-nosystemd.sh
 
 # Ugly workaround for vty-5.25.1
 RUN ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so
 RUN cabal update
 RUN cabal install cardano-cli \
+      --project-file=cabal.nosystemd.project \
       --installdir=/usr/local/bin \
       --install-method=copy \
-      -f -systemd \
-      -f -external-libsodium-vrf \
-      --minimize-conflict-set
+      -f -external-libsodium-vrf
 RUN cabal install cardano-node \
+      --project-file=cabal.nosystemd.project \
       --installdir=/usr/local/bin \
       --install-method=copy \
-      -f -systemd \
       -f -external-libsodium-vrf
 
 FROM perlur/centos-base
