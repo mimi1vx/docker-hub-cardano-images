@@ -17,7 +17,7 @@ WORKDIR /usr/src/cardano-node
 RUN git remote add hasufell https://github.com/hasufell/cardano-node.git
 RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
-RUN git cherry-pick -n c207ba2fec47e9fb36bca68127e0cbb03bf38edb # Fix GHC 8.10.2
+RUN git cherry-pick -n 595ff9f3c0ea77835503ecb67eb854907b338f4f # Fix GHC 8.10.2
 RUN git cherry-pick -n b143dd14c6474d2dba6707057ff465604cbebc6b # Fix build without systemd (#1200)
 COPY cabal.project.local ./
 RUN scripts/gen-cabal-nosystemd.sh
