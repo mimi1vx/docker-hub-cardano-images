@@ -14,11 +14,10 @@ RUN ghcup install ghc ${GHC_VERSION} && \
 WORKDIR /usr/src
 RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-node
 WORKDIR /usr/src/cardano-node
-RUN git remote add hasufell https://github.com/hasufell/cardano-node.git
 RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
-COPY cabal.project.local ./
 RUN scripts/gen-cabal-nosystemd.sh
+COPY cabal.nosystemd.project.local ./
 
 # Ugly workaround for vty-5.25.1
 RUN ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so
