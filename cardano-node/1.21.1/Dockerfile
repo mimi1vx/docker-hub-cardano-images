@@ -16,6 +16,7 @@ RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-no
 WORKDIR /usr/src/cardano-node
 RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
+RUN git cherry-pick -m 2 -n 486c2294868b6f4f107a0a9dfe956d0fad9453b1 # Check file permissions for VRF private key file #1938
 RUN scripts/gen-cabal-nosystemd.sh
 COPY cabal.nosystemd.project.local ./
 
