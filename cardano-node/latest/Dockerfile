@@ -16,6 +16,7 @@ RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-no
 WORKDIR /usr/src/cardano-node
 RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
+RUN git cherry-pick -n b6e2e9072be07b5c5e70c06ac0de955d6143783e # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
 RUN scripts/gen-cabal-nosystemd.sh
 
 # Ugly workaround for vty-5.25.1
@@ -23,12 +24,14 @@ RUN ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so
 RUN cabal update
 RUN cabal install cardano-cli \
       --allow-newer=base \
+      --ghc-options="-Wno-error=unused-imports" \
       --project-file=cabal.nosystemd.project \
       --installdir=/usr/local/bin \
       --install-method=copy \
       -f -external-libsodium-vrf
 RUN cabal install cardano-node \
       --allow-newer=base \
+      --ghc-options="-Wno-error=unused-imports" \
       --project-file=cabal.nosystemd.project \
       --installdir=/usr/local/bin \
       --install-method=copy \
