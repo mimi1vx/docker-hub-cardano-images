@@ -16,7 +16,10 @@ RUN git clone --recurse-submodules https://github.com/input-output-hk/cardano-no
 WORKDIR /usr/src/cardano-node
 RUN git fetch --all
 RUN git checkout ${CARDANO_NODE_VERSION}
-RUN git cherry-pick -n b6e2e9072be07b5c5e70c06ac0de955d6143783e # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
+RUN git cherry-pick -n 60500f976d2e43d59f6cb890972dc2b6845b1f6d # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
+RUN git cherry-pick -n ed51dbc465018de90ee99a9c2fdefa1ad832d08d # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
+RUN git cherry-pick -n 34cf5f3105831e4a5f0c8407a0e1c6f0e408c43f # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
+RUN git cherry-pick -n 7d1a72803625c7c57d25d695aa418b13b2a3a84d # Add the upcoming Allegra and Mary eras to CardanoBlock #1958
 RUN scripts/gen-cabal-nosystemd.sh
 
 # Ugly workaround for vty-5.25.1
