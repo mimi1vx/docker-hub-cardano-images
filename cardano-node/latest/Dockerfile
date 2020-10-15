@@ -21,21 +21,23 @@ RUN scripts/gen-cabal-nosystemd.sh
 
 # Ugly workaround for vty-5.25.1
 RUN ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so
-RUN cabal update
-RUN cabal install cardano-cli \
-      --allow-newer=base \
-      --ghc-options="-Wno-error=unused-imports" \
-      --project-file=cabal.nosystemd.project \
-      --installdir=/usr/local/bin \
-      --install-method=copy \
-      -f -external-libsodium-vrf
-RUN cabal install cardano-node \
-      --allow-newer=base \
-      --ghc-options="-Wno-error=unused-imports" \
-      --project-file=cabal.nosystemd.project \
-      --installdir=/usr/local/bin \
-      --install-method=copy \
-      -f -external-libsodium-vrf
+RUN cabal v2-update
+RUN cabal v2-install cardano-cli \
+--allow-newer=base \
+--ghc-options="-Wno-error=unused-imports" \
+--project-file=cabal.nosystemd.project \
+--installdir=/usr/local/bin \
+--install-method=copy \
+-f -external-libsodium-vrf \
+-j
+RUN cabal v2-install cardano-node \
+--allow-newer=base \
+--ghc-options="-Wno-error=unused-imports" \
+--project-file=cabal.nosystemd.project \
+--installdir=/usr/local/bin \
+--install-method=copy \
+-f -external-libsodium-vrf \
+-j 
 
 FROM perlur/centos-base
 
